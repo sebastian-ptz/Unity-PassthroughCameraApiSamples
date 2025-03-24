@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>ZXing.Net.Bindings.Windows.Compatibility</id>
+    <version>0.16.13</version>
+    <title>ZXing.Net.Bindings.Windows.Compatibility</title>
+    <authors>Michael Jahn</authors>
+    <owners>Michael Jahn</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">Apache-2.0</license>
+    <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
+    <icon>logo.jpg</icon>
+    <readme>readme.md</readme>
+    <projectUrl>https://github.com/micjahn/ZXing.Net/</projectUrl>
+    <description>ZXing.Net Bindings for Windows Compatibility Pack - use System.Drawing.Common with ZXing.Net for barcode reading</description>
+    <summary>ZXing.Net Bindings for Windows Compatibility Pack</summary>
+    <releaseNotes></releaseNotes>
+    <tags>ZXing Windows Compatibility Pack</tags>
+    <dependencies>
+      <group targetFramework=".NETCoreApp3.0">
+        <dependency id="ZXing.Net" version="0.16.10" exclude="Build,Analyzers" />
+        <dependency id="System.Drawing.Common" version="5.0.3" exclude="Build,Analyzers" />
+        <dependency id="NETStandard.Library" version="2.0.3" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETCoreApp3.1">
+        <dependency id="ZXing.Net" version="0.16.10" exclude="Build,Analyzers" />
+        <dependency id="System.Drawing.Common" version="6.0.0" exclude="Build,Analyzers" />
+        <dependency id="NETStandard.Library" version="2.0.3" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="ZXing.Net" version="0.16.10" exclude="Build,Analyzers" />
+        <dependency id="System.Drawing.Common" version="8.0.12" exclude="Build,Analyzers" />
+        <dependency id="NETStandard.Library" version="2.0.3" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net6.0">
+        <dependency id="ZXing.Net" version="0.16.10" exclude="Build,Analyzers" />
+        <dependency id="System.Drawing.Common" version="8.0.12" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net7.0">
+        <dependency id="ZXing.Net" version="0.16.10" exclude="Build,Analyzers" />
+        <dependency id="System.Drawing.Common" version="8.0.12" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net8.0">
+        <dependency id="ZXing.Net" version="0.16.10" exclude="Build,Analyzers" />
+        <dependency id="System.Drawing.Common" version="8.0.12" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>
