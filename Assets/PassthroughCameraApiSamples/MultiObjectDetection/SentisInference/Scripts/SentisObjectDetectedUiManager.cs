@@ -16,6 +16,9 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         private Vector2Int CameraResolution => m_webCamTextureManager.RequestedResolution;
         [SerializeField] private GameObject m_detectionCanvas;
         [SerializeField] private float m_canvasDistance = 1f;
+        private Pose m_captureCameraPose;
+        private Vector3 m_capturePosition;
+        private Quaternion m_captureRotation;
 
         private IEnumerator Start()
         {
@@ -48,12 +51,25 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             cameraCanvasRectTransform.localScale = new Vector3(localScale, localScale, localScale);
         }
 
-        private void Update()
+        public void UpdatePosition()
         {
-            var cameraPose = PassthroughCameraUtils.GetCameraPoseInWorld(CameraEye);
             // Position the canvas in front of the camera
-            m_detectionCanvas.transform.position = cameraPose.position + cameraPose.rotation * Vector3.forward * m_canvasDistance;
-            m_detectionCanvas.transform.rotation = Quaternion.Euler(0, cameraPose.rotation.eulerAngles.y, 0);
+            m_detectionCanvas.transform.position = m_capturePosition;
+            m_detectionCanvas.transform.rotation = m_captureRotation;
         }
+
+        public void CapturePosition()
+        {
+            // Capture the camera pose and position the canvas in front of the camera
+            m_captureCameraPose = PassthroughCameraUtils.GetCameraPoseInWorld(CameraEye);
+            m_capturePosition = m_captureCameraPose.position + m_captureCameraPose.rotation * Vector3.forward * m_canvasDistance;
+            m_captureRotation = Quaternion.Euler(0, m_captureCameraPose.rotation.eulerAngles.y, 0);
+        }
+
+        public Vector3 GetCapturedCameraPosition()
+        {
+            return m_captureCameraPose.position;
+        }
+
     }
 }

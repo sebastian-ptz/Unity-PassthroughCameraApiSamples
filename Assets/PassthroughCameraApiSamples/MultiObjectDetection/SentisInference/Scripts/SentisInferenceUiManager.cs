@@ -12,7 +12,13 @@ namespace PassthroughCameraSamples.MultiObjectDetection
     [MetaCodeSample("PassthroughCameraApiSamples-MultiObjectDetection")]
     public class SentisInferenceUiManager : MonoBehaviour
     {
+        [Header("Placement configureation")]
+        [SerializeField] private EnvironmentRayCastSampleManager m_environmentRaycast;
+        [SerializeField] private WebCamTextureManager m_webCamTextureManager;
+        private PassthroughCameraEye CameraEye => m_webCamTextureManager.Eye;
+
         [Header("UI display references")]
+        [SerializeField] private SentisObjectDetectedUiManager m_detectionCanvas;
         [SerializeField] private RawImage m_displayImage;
         [SerializeField] private Sprite m_boxTexture;
         [SerializeField] private Color m_boxColor;
@@ -36,9 +42,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             public float Width;
             public float Height;
             public string Label;
-            public float PerX;
-            public float PerY;
-            public Vector3 WorldPos;
+            public Vector3? WorldPos;
             public string ClassName;
         }
 
@@ -67,13 +71,17 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             m_labels = labelsAsset.text.Split('\n');
         }
 
-        public void SetDetectionImage(Texture image)
+        public void SetDetectionCapture(Texture image)
         {
             m_displayImage.texture = image;
+            m_detectionCanvas.CapturePosition();
         }
 
         public void DrawUIBoxes(Tensor<float> output, Tensor<int> labelIDs, float imageWidth, float imageHeight)
         {
+            // Updte canvas position
+            m_detectionCanvas.UpdatePosition();
+
             // Clear current boxes
             ClearAnnotations();
 
@@ -96,31 +104,44 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
             OnObjectsDetected?.Invoke(maxBoxes);
 
+            //Get the camera intrinsics
+            var intrinsics = PassthroughCameraUtils.GetCameraIntrinsics(CameraEye);
+            var camRes = intrinsics.Resolution;
+
             //Draw the bounding boxes
             for (var n = 0; n < maxBoxes; n++)
             {
+                // Get bounding box center coordinates
+                var centerX = output[n, 0] * scaleX - halfWidth;
+                var centerY = output[n, 1] * scaleY - halfHeight;
+                var perX = (centerX + halfWidth) / displayWidth;
+                var perY = (centerY + halfHeight) / displayHeight;
+
+                // Get object class name
+                var classname = m_labels[labelIDs[n]].Replace(" ", "_");
+
+                // Get the 3D marker world position using Depth Raycast
+                var centerPixel = new Vector2Int(Mathf.RoundToInt(perX * camRes.x), Mathf.RoundToInt((1.0f - perY) * camRes.y));
+                var ray = PassthroughCameraUtils.ScreenPointToRayInWorld(CameraEye, centerPixel);
+                var worldPos = m_environmentRaycast.PlaceGameObjectByScreenPos(ray);
+
+                // Create a new bounding box
                 var box = new BoundingBox
                 {
-                    CenterX = output[n, 0] * scaleX - halfWidth,
-                    CenterY = output[n, 1] * scaleY - halfHeight,
+                    CenterX = centerX,
+                    CenterY = centerY,
+                    ClassName = classname,
                     Width = output[n, 2] * scaleX,
                     Height = output[n, 3] * scaleY,
-                    Label = $"ID: {n} CLASS: {m_labels[labelIDs[n]].Replace(" ", "_")}",
-                    PerX = 0.0f,
-                    PerY = 0.0f,
-                    WorldPos = Vector3.zero,
-                    ClassName = m_labels[labelIDs[n]].Replace(" ", "_"),
+                    Label = $"Id: {n} Class: {classname} Center (px): {(int)centerX},{(int)centerY} Center (%): {perX:0.00},{perY:0.00}",
+                    WorldPos = worldPos,
                 };
 
-                box.PerX = (box.CenterX + halfWidth) / displayWidth;
-                box.PerY = (box.CenterY + halfHeight) / displayHeight;
-
-                box.Label += $" Coords: {box.PerX:0.00},{box.PerY:0.00}";
-                box.Label += $" Center: {box.CenterX:.00},{box.CenterY:.00}";
+                // Add to the list of boxes
+                BoxDrawn.Add(box);
 
                 // Draw 2D box
-                box.WorldPos = DrawBox(box, n);
-                BoxDrawn.Add(box);
+                DrawBox(box, n);
             }
         }
 
@@ -128,15 +149,12 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         {
             foreach (var box in m_boxPool)
             {
-                if (box != null)
-                {
-                    box.SetActive(false);
-                }
+                box?.SetActive(false);
             }
             BoxDrawn.Clear();
         }
 
-        private Vector3 DrawBox(BoundingBox box, int id)
+        private void DrawBox(BoundingBox box, int id)
         {
             //Create the bounding box graphic or get from pool
             GameObject panel;
@@ -157,22 +175,16 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 panel = CreateNewBox(m_boxColor);
             }
             //Set box position
-            panel.transform.localPosition = new Vector3(box.CenterX, -box.CenterY);
-
-            // look at the player
-            var rotX = 60.0f * box.PerX - 30.0f;
-            panel.transform.localRotation = Quaternion.Euler(0, rotX, 0);
-
+            panel.transform.localPosition = new Vector3(box.CenterX, -box.CenterY, box.WorldPos.HasValue ? box.WorldPos.Value.z : 0.0f);
+            //Set box rotation
+            panel.transform.rotation = Quaternion.LookRotation(panel.transform.position - m_detectionCanvas.GetCapturedCameraPosition());
             //Set box size
             var rt = panel.GetComponent<RectTransform>();
             rt.sizeDelta = new Vector2(box.Width, box.Height);
-
             //Set label text
             var label = panel.GetComponentInChildren<Text>();
             label.text = box.Label;
             label.fontSize = 12;
-
-            return panel.transform.position;
         }
 
         private GameObject CreateNewBox(Color color)

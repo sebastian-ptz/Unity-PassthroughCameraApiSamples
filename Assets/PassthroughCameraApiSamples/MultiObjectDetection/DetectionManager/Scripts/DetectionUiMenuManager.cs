@@ -41,7 +41,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
             m_noPermissionPanel.SetActive(false);
             m_loadingPanel.SetActive(true);
             // Wait until Sentis model is loaded
-            var sentisInference = FindObjectOfType<SentisInferenceRunManager>();
+            var sentisInference = FindFirstObjectByType<SentisInferenceRunManager>();
             while (!sentisInference.IsModelLoaded)
             {
                 yield return null;

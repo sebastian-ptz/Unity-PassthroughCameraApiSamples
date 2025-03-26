@@ -26,7 +26,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 
             if (!m_camera)
             {
-                m_camera = FindAnyObjectByType<OVRCameraRig>();
+                m_camera = FindFirstObjectByType<OVRCameraRig>();
             }
             else
             {
