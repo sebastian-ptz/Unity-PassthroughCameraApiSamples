@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 170067359}
   - component: {fileID: 170067360}
   m_Layer: 0
-  m_Name: Zxing Scan
+  m_Name: QRScanner_Zxing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

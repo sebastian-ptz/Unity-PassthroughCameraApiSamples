@@ -5,11 +5,29 @@ using System;
 using ZXing;
 using ZXing.Windows.Compatibility;
 
-public class QRScanner : MonoBehaviour
+public class PCAScanner : MonoBehaviour
 {
+    public static PCAScanner Instance { get; private set; }
+
     [SerializeField] private WebCamTextureManager m_webCamTextureManager;
     private IBarcodeReader m_barcodeReader;
     private bool m_isScanning;
+
+    [SerializeField] string scanResult;
+
+    public event Action<Result> OnQRCodeScanned;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     private void Start()
     {
@@ -63,7 +81,8 @@ public class QRScanner : MonoBehaviour
             if (result != null)
             {
                 Debug.Log("QR Code Detected: " + result.Text);
-                // You can also trigger any UI or event here when a QR code is detected.
+                OnQRCodeScanned?.Invoke(result);
+                scanResult = result.Text;
             }
         }
         catch (Exception e)
