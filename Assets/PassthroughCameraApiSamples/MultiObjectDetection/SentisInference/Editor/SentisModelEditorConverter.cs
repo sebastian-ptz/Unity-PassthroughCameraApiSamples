@@ -30,7 +30,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection.Editor
 
             if (GUILayout.Button("Generate Yolov9 Sentis model with Non-Max-Supression layer"))
             {
-                OnEnable(); // get the latest values from the serialized object
+                OnEnable(); // Get the latest values from the serialized object
                 ConvertModel(); // convert the ONNX model to sentis
             }
         }

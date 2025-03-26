@@ -45,6 +45,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         {
             // Wait for the UI to be ready because when Sentis load the model it will block the main thread.
             yield return new WaitForSeconds(0.05f);
+
             m_uiInference.SetLabels(m_labelsAsset);
             LoadModel();
         }
@@ -78,8 +79,8 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 {
                     return;
                 }
-                // Update UI image
-                m_uiInference.SetDetectionImage(targetTexture);
+                // Update Capture data
+                m_uiInference.SetDetectionCapture(targetTexture);
                 // Convert the texture to a Tensor and schedule the inference
                 m_input = TextureConverter.ToTensor(targetTexture, m_inputSize.x, m_inputSize.y, 3);
                 m_schedule = m_engine.ScheduleIterable(m_input);

@@ -43,7 +43,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         private IEnumerator Start()
         {
             // Wait until Sentis model is loaded
-            var sentisInference = FindObjectOfType<SentisInferenceRunManager>();
+            var sentisInference = FindAnyObjectByType<SentisInferenceRunManager>();
             while (!sentisInference.IsModelLoaded)
             {
                 yield return null;
@@ -136,11 +136,10 @@ namespace PassthroughCameraSamples.MultiObjectDetection
         /// <summary>
         /// Place a marker using the environment raycast
         /// </summary>
-        private bool PlaceMarkerUsingEnvironmentRaycast(Vector3 boxWorldPos, string className)
+        private bool PlaceMarkerUsingEnvironmentRaycast(Vector3? position, string className)
         {
-            // Get the real transform using DepthApi
-            var markerTransform = m_environmentRaycast.PlaceGameObject(boxWorldPos);
-            if (!markerTransform)
+            // Check if the position is valid
+            if (!position.HasValue)
             {
                 return false;
             }
@@ -152,7 +151,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 var markerClass = e.GetComponent<DetectionSpawnMarkerAnim>();
                 if (markerClass)
                 {
-                    var dist = Vector3.Distance(e.transform.position, markerTransform.position);
+                    var dist = Vector3.Distance(e.transform.position, position.Value);
                     if (dist < m_spawnDistance && markerClass.GetYoloClassName() == className)
                     {
                         existMarker = true;
@@ -168,7 +167,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
                 m_spwanedEntities.Add(eMarker);
 
                 // Update marker transform with the real world transform
-                eMarker.transform.SetPositionAndRotation(markerTransform.position, markerTransform.rotation);
+                eMarker.transform.SetPositionAndRotation(position.Value, Quaternion.identity);
                 eMarker.GetComponent<DetectionSpawnMarkerAnim>().SetYoloClassName(className);
             }
 

@@ -45,8 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cc36683f00754ee3ba9303b5060e815, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Camera: {fileID: 0}
-  RaycastManager: {fileID: 2281515814721962400}
+  m_raycastManager: {fileID: 2281515814721962400}
 --- !u!114 &2281515814721962400
 MonoBehaviour:
   m_ObjectHideFlags: 0

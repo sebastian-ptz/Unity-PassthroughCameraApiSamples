@@ -14,9 +14,7 @@ namespace PassthroughCameraSamples.MultiObjectDetection
     public class EnvironmentRayCastSampleManager : MonoBehaviour
     {
         private const string SPATIALPERMISSION = "com.oculus.permission.USE_SCENE";
-
-        public Transform Camera;
-        public EnvironmentRaycastManager RaycastManager;
+        [SerializeField] private EnvironmentRaycastManager m_raycastManager;
 
         private void Start()
         {
@@ -35,26 +33,19 @@ namespace PassthroughCameraSamples.MultiObjectDetection
 #endif
         }
 
-        public Transform PlaceGameObject(Vector3 cameraPosition)
+        public Vector3? PlaceGameObjectByScreenPos(Ray ray)
         {
             if (EnvironmentRaycastManager.IsSupported)
             {
-                transform.position = Camera.position;
-                transform.LookAt(cameraPosition);
-
-                var ray = new Ray(Camera.position, transform.forward);
-                if (RaycastManager.Raycast(ray, out var hitInfo))
+                if (m_raycastManager.Raycast(ray, out var hitInfo))
                 {
-                    transform.SetPositionAndRotation(
-                        hitInfo.point,
-                        Quaternion.LookRotation(hitInfo.normal, Vector3.up));
+                    return hitInfo.point;
                 }
                 else
                 {
                     Debug.Log("RaycastManager failed");
+                    return null;
                 }
-
-                return transform;
             }
             else
             {

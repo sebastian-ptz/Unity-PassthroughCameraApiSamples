@@ -9,25 +9,25 @@ As these API definitions reach their final stages, they will be incorporated int
 
 |Sample Name |OpenXR features / extensions shown |Target devices| Extra notes
 |--|--|--|--|
-|[`XrBodyFaceEyeSocial`](Samples/XrSamples/XrBodyFaceEyeSocial/) |`XR_FB_body_tracking`, `XR_FB_eye_tracking_social`, `XR_FB_face_tracking` |Meta Quest Pro
-|[`XrColocationDiscovery`](Samples/XrSamples/XrColocationDiscovery/) |`XR_META_colocation_discovery`, `XR_META_spatial_entity_group_sharing`, and `XR_META_spatial_entity_sharing`  |Meta Quest 2 and later devices
-|[`XrColorSpaceFB`](Samples/XrSamples/XrColorSpaceFB/)               |`XR_FB_color_space` |All Meta Quest devices
-|[`XrCompositor_NativeActivity`](Samples/XrSamples/XrCompositor_NativeActivity/)   |`XR_KHR_composition_layer_cube`, `XR_KHR_composition_layer_cylinder`, `XR_KHR_composition_layer_equirect2`, `XR_FB_foveation` |All Meta Quest devices |Single file `C` sample
-|[`XrControllers`](Samples/XrSamples/XrControllers/)                 |`XR_FB_haptic_amplitude_envelope`, `XR_FB_haptic_pcm`|Meta Quest 2 and later devices
-|[`XrDynamicObjects`](Samples/XrSamples/XrDynamicObjects/)                 |`XR_META_dynamic_object_tracker`|Meta Quest 3 and later devices
-|[`XrHandDataSource`](Samples/XrSamples/XrHandDataSource/)              |`XR_EXT_hand_tracking_data_source`|Meta Quest 2 and later devices
-|[`XrHandsAndControllers`](Samples/XrSamples/XrHandsAndControllers/)         |`XR_META_detached_controllers`,`XR_META_simultaneous_hands_and_controllers`|Meta Quest 3 and later|
-|[`XrHandsFB`](Samples/XrSamples/XrHandsFB/)                     |`XR_FB_hand_tracking_mesh`, `XR_FB_hand_tracking_capsules`,`XR_FB_hand_tracking_aim`|All Meta Quest devices|
-|[`XrHandTrackingWideMotionMode`](Samples/XrSamples/XrHandTrackingWideMotionMode/)      |`XR_META_hand_tracking_wide_motion_mode`|Meta Quest 3 and later|
-|[`XrMicrogestures`](Samples/XrSamples/XrMicrogestures/)      |`XR_META_hand_tracking_microgestures`|Meta Quest 2 and later devices|
-|[`XrInput`](Samples/XrSamples/XrInput/)              |OpenXR Action System|All Meta Quest devices|
-|[`XrKeyboard`](Samples/XrSamples/XrKeyboard/) |`XR_FB_keyboard_tracking`,`XR_FB_passthrough_keyboard_hands`,`XR_FB_render_model`|Meta Quest 2 and later|
-|[`XrPassthrough`](Samples/XrSamples/XrPassthrough/)                |`XR_FB_passthrough`|All Meta Quest devices|Demonstrates the use of still and animated styles, selective and projected passthrough.
-|[`XrPassthroughOcclusion`](Samples/XrSamples/XrPassthroughOcclusion/)        |`XR_META_envionment_depth`|Meta Quest 3 and later|
-|[`XrSceneModel`](Samples/XrSamples/XrSceneModel/)                 |`XR_FB_scene_capture`, `XR_FB_scene`, `XR_FB_spatial_entity`, `XR_FB_spatial_entity_query`, `XR_FB_spatial_entity_container`, `XR_META_spatial_entity_mesh`, `XR_META_boundary_visibility`|Meta Quest 2 and later|Demonstrates a scene-aware experience including floor, walls, and furniture.
-|[`XrSpaceWarp`](Samples/XrSamples/XrSpaceWarp/)                   |`XR_FB_space_warp`|Meta Quest 2 and later|
-|[`XrSpatialAnchor`](Samples/XrSamples/XrSpatialAnchor/)              |`XR_FB_spatial_entity`, `XR_FB_spatial_entity_query`, `XR_FB_spatial_entity_storage`, `XR_FB_spatial_entity_storage_batch`, `XR_FB_spatial_entity_sharing`, `XR_FB_spatial_entity_user`|Meta Quest 2 and later|
-|[`XrVirtualKeyboard`](Samples/XrSamples/XrVirtualKeyboard/) |`XR_META_virtual_keyboard`,`XR_FB_render_model`|Meta Quest 2 and later|
+|`XrBodyFaceEyeSocial` |`XR_FB_body_tracking`, `XR_FB_eye_tracking_social`, `XR_FB_face_tracking` |Meta Quest Pro
+|`XrColocationDiscovery` |`XR_META_colocation_discovery`, `XR_META_spatial_entity_group_sharing`, and `XR_META_spatial_entity_sharing`  |Meta Quest 2 and later devices
+|`XrColorSpaceFB`               |`XR_FB_color_space` |All Meta Quest devices
+|`XrCompositor_NativeActivity`   |`XR_KHR_composition_layer_cube`, `XR_KHR_composition_layer_cylinder`, `XR_KHR_composition_layer_equirect2`, `XR_FB_foveation` |All Meta Quest devices |Single file `C` sample
+|`XrControllers`                 |`XR_FB_haptic_amplitude_envelope`, `XR_FB_haptic_pcm`|Meta Quest 2 and later devices
+|`XrDynamicObjects`                 |`XR_META_dynamic_object_tracker`|Meta Quest 3 and later devices
+|`XrHandDataSource`              |`XR_EXT_hand_tracking_data_source`|Meta Quest 2 and later devices
+|`XrHandsAndControllers`         |`XR_META_detached_controllers`,`XR_META_simultaneous_hands_and_controllers`|Meta Quest 3 and later|
+|`XrHandsFB`                     |`XR_FB_hand_tracking_mesh`, `XR_FB_hand_tracking_capsules`,`XR_FB_hand_tracking_aim`|All Meta Quest devices|
+|`XrHandTrackingWideMotionMode`      |`XR_META_hand_tracking_wide_motion_mode`|Meta Quest 3 and later|
+|`XrMicrogestures`      |`XR_META_hand_tracking_microgestures`|Meta Quest 2 and later devices|
+|`XrInput`              |OpenXR Action System|All Meta Quest devices|
+|`XrKeyboard` |`XR_FB_keyboard_tracking`,`XR_FB_passthrough_keyboard_hands`,`XR_FB_render_model`|Meta Quest 2 and later|
+|`XrPassthrough`                |`XR_FB_passthrough`|All Meta Quest devices|Demonstrates the use of still and animated styles, selective and projected passthrough.
+|`XrPassthroughOcclusion`        |`XR_META_envionment_depth`|Meta Quest 3 and later|
+|`XrSceneModel`                 |`XR_FB_scene_capture`, `XR_FB_scene`, `XR_FB_spatial_entity`, `XR_FB_spatial_entity_query`, `XR_FB_spatial_entity_container`, `XR_META_spatial_entity_mesh`, `XR_META_boundary_visibility`|Meta Quest 2 and later|Demonstrates a scene-aware experience including floor, walls, and furniture.
+|`XrSpaceWarp`                   |`XR_FB_space_warp`|Meta Quest 2 and later|
+|`XrSpatialAnchor`              |`XR_FB_spatial_entity`, `XR_FB_spatial_entity_query`, `XR_FB_spatial_entity_storage`, `XR_FB_spatial_entity_storage_batch`, `XR_FB_spatial_entity_sharing`, `XR_FB_spatial_entity_user`|Meta Quest 2 and later|
+|`XrVirtualKeyboard` |`XR_META_virtual_keyboard`,`XR_FB_render_model`|Meta Quest 2 and later|
 
 ## Build
 > Enable Quest system property to use experimental features, you will need the command: `adb shell setprop debug.oculus.experimentalEnabled 1`.
