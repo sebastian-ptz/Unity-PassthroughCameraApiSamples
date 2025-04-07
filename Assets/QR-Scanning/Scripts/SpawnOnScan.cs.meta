@@ -3,7 +3,9 @@ guid: 6668324c41dc9db4dabc372d0d2d9550
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - XrCamera: {instanceID: 0}
+  - CubePrefab: {fileID: 6951620757289953797, guid: 60077b600d9bf0a4cb2ec1188583b711, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

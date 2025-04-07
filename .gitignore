@@ -87,3 +87,4 @@ PerformanceTestRun*.*
 StreamingAssets*
 !NativeSamples.zip
 UserSettings/
+/XR-QRSpawner_BurstDebugInformation_DoNotShip/tempburstlibs/arm64-v8a
