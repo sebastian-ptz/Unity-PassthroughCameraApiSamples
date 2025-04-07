@@ -5,6 +5,9 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
+  - enabled: 1
+    path: Assets/QR-Scanning/XR-QRSpawner.unity
+    guid: 286c7c8fe44f79340aff1cdd5dc709e5
   - enabled: 0
     path: Assets/StartScene/StartScene.unity
     guid: 69e1b31c45bac42f88f75017ee404de1
@@ -23,9 +26,6 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/PassthroughCameraApiSamples/ShaderSample/ShaderSample.unity
     guid: 708e8dca6055146b28afe2481f141457
-  - enabled: 1
-    path: Assets/QR-Scanning/QR-CameraViewer.unity
-    guid: 286c7c8fe44f79340aff1cdd5dc709e5
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: f2bf97b3acdb64248a707c407c9fc54e, type: 2}
     UnityEditor.XR.ARCore.ARCoreSettings: {fileID: 11400000, guid: 38e5ba76a2c43f34d98ea08787362231, type: 2}
