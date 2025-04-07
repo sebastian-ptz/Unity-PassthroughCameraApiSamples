@@ -76,6 +76,8 @@ public class PCAScanner : MonoBehaviour
     /// <returns>An IEnumerator for coroutine management.</returns>
     private IEnumerator ScanQRCode()
     {
+        yield return new WaitForSeconds(0.5f); // delay
+
         var texture = new Texture2D(m_webCamTextureManager.WebCamTexture.width, m_webCamTextureManager.WebCamTexture.height);
         var pixels = m_webCamTextureManager.WebCamTexture.GetPixels32();
         texture.SetPixels32(pixels);
