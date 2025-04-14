@@ -28,18 +28,11 @@ public class SpatialAnchorLoader : MonoBehaviour
 
     public async Task LoadAndLocalizeAnchors()
     {
-        // Check for saved UUIDs in PlayerPrefs
-        if (!PlayerPrefs.HasKey(SpatialAnchorManager.NUMUUIDPLAYERPREF))
-        {
-            Debug.Log("No saved anchors found.");
-            return;
-        }
-
-        
-        var playerNumCount = PlayerPrefs.GetInt(SpatialAnchorManager.NUMUUIDPLAYERPREF);
+        // Get the number of saved UUIDs, defaulting to 0 if the key does not exist
+        var playerNumCount = PlayerPrefs.GetInt(SpatialAnchorManager.NUMUUIDPLAYERPREF, 0);
         if (playerNumCount == 0)
         {
-            Debug.Log("No anchors to load.");
+            Debug.Log("No saved anchors found.");
             return;
         }
 
@@ -48,17 +41,14 @@ public class SpatialAnchorLoader : MonoBehaviour
         for (var i = 0; i < playerNumCount; i++)
         {
             var key = $"uuid{i}";
-            if (PlayerPrefs.HasKey(key))
+            var currentUuid = PlayerPrefs.GetString(key, string.Empty); // empty string if key is missing
+            if (!string.IsNullOrEmpty(currentUuid))
             {
-                var currentUuid = PlayerPrefs.GetString(key);
-                if (!string.IsNullOrEmpty(currentUuid))
-                {
-                    uuids.Add(new Guid(currentUuid));
-                }
-                else
-                {
-                    Debug.LogWarning($"Invalid or empty UUID found for key: {key}");
-                }
+                uuids.Add(new Guid(currentUuid));
+            }
+            else
+            {
+                Debug.LogWarning($"Invalid or empty UUID found for key: {key}");
             }
         }
 
