@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.meta.xr.mrutilitykit": "74.0.0",
+    "com.meta.xr.mrutilitykit": "74.0.1",
     "com.unity.feature.development": "1.0.2",
     "com.unity.sentis": "2.1.1",
     "com.unity.ugui": "1.0.0",
