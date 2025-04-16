@@ -30,6 +30,7 @@ namespace PassthroughCameraSamples.CameraToWorld
         private bool m_snapshotTaken;
         private OVRPose m_snapshotHeadPose;
 
+        private void Awake() => OVRManager.display.RecenteredPose += RecenterCallBack;
 
         private IEnumerator Start()
         {
@@ -94,7 +95,7 @@ namespace PassthroughCameraSamples.CameraToWorld
 
                 if (m_snapshotTaken)
                 {
-                    // Enable of disable the debug translation of the markers
+                    // Enable or disable the debug translation of the markers
                     TranslateMarkersForDebug(m_isDebugOn);
                 }
             }
@@ -188,6 +189,17 @@ namespace PassthroughCameraSamples.CameraToWorld
             foreach (var go in gameObjects)
             {
                 go.transform.position += direction * m_headSpaceDebugShift * (moveForward ? 1 : -1);
+            }
+        }
+
+        private void RecenterCallBack()
+        {
+            if (m_snapshotTaken)
+            {
+                m_snapshotTaken = false;
+                m_webCamTextureManager.WebCamTexture.Play();
+                m_cameraCanvas.ResumeStreamingFromCamera();
+                m_snapshotHeadPose = OVRPose.identity;
             }
         }
     }

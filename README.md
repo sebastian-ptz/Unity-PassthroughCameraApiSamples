@@ -309,6 +309,18 @@ Unity Sentis offers a framework to load models from popular open-source platform
 - **Current Status:**
   Sentis does not currently leverage any NPU or hardware acceleration. It operates as a regular Android platform application on Quest devices, so factor this into model selection.
 
+### Report an issue
+
+If you encounter any issues, please report them with the following details:
+
+- **Unity Engine version** used in your project.
+- **XR plugin** used in your project (Oculus XR or Open XR) and the version number.
+- **Quest device** model and **Horizon OS version**.
+- Attach in your report any useful **logcat logs**.
+  - You can use `adb logcat >> log.txt` to save the logs to a file.
+- Attach any **video or screenshot** of the issue.
+- Any **relevant information** about your specific use case, e.g. other sdk or plugins used in your project.
+
 ## License
 
 The [`Oculus License`](./LICENSE.txt) applies to the SDK and supporting material. The [`MIT License`](./Assets/PassthroughCameraApiSamples/LICENSE.txt) applies to only certain, clearly marked documents. If an individual file does not indicate which license it is subject to, then the Oculus License applies.

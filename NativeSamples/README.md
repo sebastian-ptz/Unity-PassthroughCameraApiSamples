@@ -1,68 +1,48 @@
-# Meta OpenXR SDK / Samples
+# Native XrCamera Sample
 
-## Introduction
-Welcome to the Meta OpenXR SDK project, a native OpenXR SDK and samples specifically designed for Meta Quest. This SDK is a comprehensive resource that includes header files and API definitions for both experimental and pre-release OpenXR APIs.
+## Overview
+Quest3 and Quest 3s implements Android the Android Camera2 API, which allows developers to capture camera images from the two cameras representing the left eye and right eye. Camera intrinsics and extrinsics are also available and should be used to calculate precise offsets of each camera from their corresponding tracked eye pose.
 
-As these API definitions reach their final stages, they will be incorporated into the [OpenXR SDK](https://github.com/KhronosGroup/OpenXR-SDK). To help you understand and utilize these features, we've included a variety of samples. These samples serve as practical demonstrations, showing you how to integrate and use the APIs effectively.
+## The Sample
+This sample demonstrates how developers can use Camera 2 API to:
 
-## What are the samples?
+1. Enumerate available cameras
+1. Open a camera device
+1. Set up a request for camera images
+1. Access camera image data from app code to calculate average brightness
+1. Utilize the timestamp of the image and the camera lens extrinsic data to calculate an accurate camera pose
+1. Stop and re-start a camera device
 
-|Sample Name |OpenXR features / extensions shown |Target devices| Extra notes
-|--|--|--|--|
-|`XrBodyFaceEyeSocial` |`XR_FB_body_tracking`, `XR_FB_eye_tracking_social`, `XR_FB_face_tracking` |Meta Quest Pro
-|`XrColocationDiscovery` |`XR_META_colocation_discovery`, `XR_META_spatial_entity_group_sharing`, and `XR_META_spatial_entity_sharing`  |Meta Quest 2 and later devices
-|`XrColorSpaceFB`               |`XR_FB_color_space` |All Meta Quest devices
-|`XrCompositor_NativeActivity`   |`XR_KHR_composition_layer_cube`, `XR_KHR_composition_layer_cylinder`, `XR_KHR_composition_layer_equirect2`, `XR_FB_foveation` |All Meta Quest devices |Single file `C` sample
-|`XrControllers`                 |`XR_FB_haptic_amplitude_envelope`, `XR_FB_haptic_pcm`|Meta Quest 2 and later devices
-|`XrDynamicObjects`                 |`XR_META_dynamic_object_tracker`|Meta Quest 3 and later devices
-|`XrHandDataSource`              |`XR_EXT_hand_tracking_data_source`|Meta Quest 2 and later devices
-|`XrHandsAndControllers`         |`XR_META_detached_controllers`,`XR_META_simultaneous_hands_and_controllers`|Meta Quest 3 and later|
-|`XrHandsFB`                     |`XR_FB_hand_tracking_mesh`, `XR_FB_hand_tracking_capsules`,`XR_FB_hand_tracking_aim`|All Meta Quest devices|
-|`XrHandTrackingWideMotionMode`      |`XR_META_hand_tracking_wide_motion_mode`|Meta Quest 3 and later|
-|`XrMicrogestures`      |`XR_META_hand_tracking_microgestures`|Meta Quest 2 and later devices|
-|`XrInput`              |OpenXR Action System|All Meta Quest devices|
-|`XrKeyboard` |`XR_FB_keyboard_tracking`,`XR_FB_passthrough_keyboard_hands`,`XR_FB_render_model`|Meta Quest 2 and later|
-|`XrPassthrough`                |`XR_FB_passthrough`|All Meta Quest devices|Demonstrates the use of still and animated styles, selective and projected passthrough.
-|`XrPassthroughOcclusion`        |`XR_META_envionment_depth`|Meta Quest 3 and later|
-|`XrSceneModel`                 |`XR_FB_scene_capture`, `XR_FB_scene`, `XR_FB_spatial_entity`, `XR_FB_spatial_entity_query`, `XR_FB_spatial_entity_container`, `XR_META_spatial_entity_mesh`, `XR_META_boundary_visibility`|Meta Quest 2 and later|Demonstrates a scene-aware experience including floor, walls, and furniture.
-|`XrSpaceWarp`                   |`XR_FB_space_warp`|Meta Quest 2 and later|
-|`XrSpatialAnchor`              |`XR_FB_spatial_entity`, `XR_FB_spatial_entity_query`, `XR_FB_spatial_entity_storage`, `XR_FB_spatial_entity_storage_batch`, `XR_FB_spatial_entity_sharing`, `XR_FB_spatial_entity_user`|Meta Quest 2 and later|
-|`XrVirtualKeyboard` |`XR_META_virtual_keyboard`,`XR_FB_render_model`|Meta Quest 2 and later|
+## Known Issues
+1. *Permissions* - this version of the XrCamera sample uses the standard Android Camera permission and that permission needs to be granted manually in system settings. You can locate the camera permission in this path: Settings > Privacy & Safety > App Permissions > Headset Cameras. Toggle the camera permission to "XRCamera Sample" to enable camera access.
 
-## Build
-> Enable Quest system property to use experimental features, you will need the command: `adb shell setprop debug.oculus.experimentalEnabled 1`.
+2. Close the sample using the _Exit_ button rather than closing it via shell to make sure that the camera resources are torn down properly. This is an issue in the sample framework and not in the Camera 2 implemention itself.
 
-> **Note**: This value resets with each headset reboot.
-### Android
-#### Dependencies
-* Android Studio
-  * The lastest Android Studio release is recommended.
-  * If you have agreed with the licenses previously on your development system, Android Studio will automatically install, at the start up time. Otherwise (or if the installation failed), you need to install the required CMake and NDK manually, refer to the [official instructions](https://developer.android.com/studio/projects/install-ndk) for the detailed steps. The default installed locations are:
-    * `$SDK-ROOT-DIR/ndk/$ndkVersion` for NDK.
-    * `$SDK-ROOT-DIR/cmake/$cmake-version` for CMake.
-#### Build with CMake on Android Studio
-1. Unzip the **NativeSamples.zip** file in your preferred folder.
-2. If this is the first time you are launching Android Studio, select Open an existing Android Studio project. If you have launched Android Studio before, click File > Open instead.
-3. Open build.gradle under Samples folder
+## Build with CMake on Android Studio
+1. If this is the first time you are launching Android Studio, select Open an existing Android Studio project. If you have launched Android Studio before, click File > Open instead.
+2. Open build.gradle under Samples folder
    * You could also open individual sample app from the Samples/XrSamples folders. For example, Samples/XrSamples/XrHandsFB/Projects/Android/build.gradle
-4. After the build has finished, directly run a sample with the device connected. Click Run in the toolbar.
+3. After the build has finished, directly run a sample with the device connected. Click Run in the toolbar.
 
-### Meta Quest Link
-While the samples provided in this package are designed as Quest Native / Android samples, some of them can be built and run on Windows for Meta Quest Link. For building with Meta Quest Link, you'll need:
-* [cmake](https://cmake.org/download/)
-* A C++ development environment compatible with cmake (such as Microsoft Visual Studio 2022)
-* [Meta Quest Link application](https://www.meta.com/quest/setup/)
+## Running XrCameraSample
+On startup the application will query the Camera2 API for all camera configurations available from the Quest 3 or Quest 3s and the Average Brightness, Camera Position, and Camera Rotation values on the right side of the screen will be blank. The camera configuration information includes the lens position and rotation relative to the center of the HMD. This is used to compute the exact position of the camera at the time of the image.
 
-#### Notes for running samples with Meta Quest Link
-* Ensure that Developer Runtime Features is enabled in the Meta Quest Link application.
-* Make sure the headset is on, the Meta Quest Link application is running and Meta Quest Link is started; before double-click and launch the sample.
+You can easily test whether the average brightness data is working properly by covering the left camera and observing the value decreasing drastically. The pose data should update in an expected manner as you move the HMD.
 
-## More details
+### Starting The Camera
+Once the Start Camera button is pressed the left camera will be opened and a repeating request for camera images will be made. When a new camera image is available the image data and a timestamp will be passed to a callback function that will use that information to compute the average brightness and the UI will be updated. Camera2 provides the camera image in YUV (NV21) format.
 
-- [https://developer.oculus.com/downloads/package/oculus-openxr-mobile-sdk/](https://developer.oculus.com/downloads/package/oculus-openxr-mobile-sdk/)
-- [https://developer.oculus.com/documentation/native/android/mobile-openxr-sample/](https://developer.oculus.com/documentation/native/android/mobile-openxr-sample/)
+In addition to computing the brightness, the callback function will use the timestamp, the camera pose offset from the center of the HMD (mentioned above), and the OpenXR API for retrieving the HMD pose to compute the precise pose of the camera at the time the image was captured, This precision can be desirable for some CV applications so we felt it was valuable to to demonstrate it in the sample.
 
-See the [CONTRIBUTING](CONTRIBUTING.md) file for how to help out.
+### Stopping The Camera
+When Stop Camera is pressed the image capture stops and the values in the UI will no longer update. Image capture will resume by pressing Start Camera.
+
+### Exiting The Sample
+It is suggested that users exit the app by pressing the Exit button rather than quitting the application in the shell due to a bug in the sample framework where the camera does not immediately shut down.
+
+## Troubleshooting
+1. Check the logs if you encounter errors or crashes. Both the sample and the Camera2 implementation have lots of descriptive log messages that should be able to help narrow the problem.
+1. Make sure the Android camera permission is granted after installing the APK. See the Managing Permissions section for instructions,
 
 ## License
 Meta OpenXR SDK is subject to the Oculus SDK License Agreement, as found in the LICENSE file.
