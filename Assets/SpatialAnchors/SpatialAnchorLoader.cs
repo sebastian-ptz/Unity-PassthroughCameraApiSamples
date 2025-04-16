@@ -1,42 +1,44 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using TMPro;
 using UnityEngine;
+using TMPro;
 
 public class SpatialAnchorLoader : MonoBehaviour
 {
+
     private OVRSpatialAnchor m_anchorPrefab;
+    public bool Debugging;
+
     private SpatialAnchorManager m_spatialAnchorManager;
 
     private void Awake()
     {
-        var anchorManager = GetComponent<SpatialAnchorManager>();
-        if (anchorManager == null)
+        if (m_spatialAnchorManager == null)
         {
-            Debug.LogError("SpatialAnchorManager not found on this GameObject.");
-            return;
+            m_spatialAnchorManager = SpatialAnchorManager.Instance;
         }
 
-        m_anchorPrefab = anchorManager.AnchorPrefab;
+        m_anchorPrefab = m_spatialAnchorManager.AnchorPrefab;
+
         if (m_anchorPrefab == null)
         {
-            Debug.LogError("AnchorPrefab is not assigned in SpatialAnchorManager.");
+            Debug.LogError("AnchorPrefab is null. Assigned in SpatialAnchorManager.");
             return;
         }
     }
 
-    public async Task LoadAndLocalizeAnchors()
+    public async Task<List<OVRSpatialAnchor>> LoadAndLocalizeAnchors()
     {
-        // Get the number of saved UUIDs, defaulting to 0 if the key does not exist
-        var playerNumCount = PlayerPrefs.GetInt(SpatialAnchorManager.NUMUUIDPLAYERPREF, 0);
+        var anchors = new List<OVRSpatialAnchor>();
+        var playerNumCount = PlayerPrefs.GetInt("numUuids", 0);
+
         if (playerNumCount == 0)
         {
             Debug.Log("No saved anchors found.");
-            return;
+            return anchors;
         }
 
-        // Retrieve UUIDs from PlayerPrefs
         var uuids = new List<Guid>();
         for (var i = 0; i < playerNumCount; i++)
         {
@@ -59,7 +61,7 @@ public class SpatialAnchorLoader : MonoBehaviour
         if (!loadResult.Success)
         {
             Debug.LogError($"Failed to load unbound anchors: {loadResult.Status}");
-            return;
+            return anchors; // Return early if loading fails
         }
 
         Debug.Log($"Successfully loaded {unboundAnchors.Count} unbound anchors.");
@@ -71,21 +73,27 @@ public class SpatialAnchorLoader : MonoBehaviour
             if (localized)
             {
                 Debug.Log($"Anchor localized successfully: {unboundAnchor.Uuid}");
-                InstantiateAndBindAnchor(unboundAnchor);
+                var spatialAnchor = InstantiateAndBindAnchor(unboundAnchor);
+                if (spatialAnchor != null)
+                {
+                    anchors.Add(spatialAnchor);
+                }
             }
-            else
+            else if (!localized && Debugging)
             {
                 Debug.LogWarning($"Failed to localize anchor: {unboundAnchor.Uuid}");
             }
         }
+
+        return anchors;
     }
 
-    private void InstantiateAndBindAnchor(OVRSpatialAnchor.UnboundAnchor unboundAnchor)
+    private OVRSpatialAnchor InstantiateAndBindAnchor(OVRSpatialAnchor.UnboundAnchor unboundAnchor)
     {
         if (!unboundAnchor.TryGetPose(out var pose))
         {
             Debug.LogWarning($"Failed to get pose for localized anchor: {unboundAnchor.Uuid}");
-            return;
+            return null;
         }
 
         // Instantiate spatialAnchor and Bind anchor
@@ -106,5 +114,7 @@ public class SpatialAnchorLoader : MonoBehaviour
         {
             Debug.LogWarning("TextMeshProUGUI components for UUID and status are missing in the prefab.");
         }
+
+        return spatialAnchor;
     }
 }

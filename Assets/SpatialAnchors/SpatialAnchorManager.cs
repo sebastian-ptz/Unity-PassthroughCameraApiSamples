@@ -3,21 +3,52 @@ using System.Collections;
 using UnityEngine;
 using TMPro;
 using System;
-using System.Threading.Tasks;
 
 public class SpatialAnchorManager : MonoBehaviour
 {
-    public OVRSpatialAnchor AnchorPrefab;
-    public const string NUMUUIDPLAYERPREF = "numUuids";
+    public static SpatialAnchorManager Instance;
 
-    private Canvas m_canvas;
+    public bool Debugging = true;
+    public OVRSpatialAnchor AnchorPrefab;
+
     private TextMeshProUGUI m_uuidText;
     private TextMeshProUGUI m_statusText;
     private OVRSpatialAnchor m_lastAnchor;
-    //private OVRAnchorLoader anchorLoader;
+    private SpatialAnchorLoader m_anchorLoader;
     private List<OVRSpatialAnchor> m_anchors = new();
 
-    //private void Awake() => anchorLoader = GetComponent<AnchorLoader>();
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Debug.LogError("Multiple instances of SpatialAnchorManager detected!");
+            Destroy(this);
+        }
+
+        m_anchorLoader = GetComponent<SpatialAnchorLoader>();
+    }
+
+    private async void Start()
+    {
+        // Ensure numUuids exists with a default value of 0
+        if (!PlayerPrefs.HasKey("numUuids"))
+        {
+            PlayerPrefs.SetInt("numUuids", 0);
+            PlayerPrefs.Save();
+            if (Debugging) Debug.Log($"Initialized numUuids with value 0.");
+        }
+
+        // Load and localize anchors
+        m_anchors = await m_anchorLoader.LoadAndLocalizeAnchors();
+        if (m_anchors.Count > 0)
+        {
+            m_lastAnchor = m_anchors[^1];
+        }
+    }
 
     private async void Update()
     {
@@ -26,45 +57,27 @@ public class SpatialAnchorManager : MonoBehaviour
             CreateSpatialAnchor();
         }
 
-        // Manage Saving Anchor
+        #region Saving Anchors
         if (OVRInput.GetDown(OVRInput.Button.One))
         {
             var result = await SaveLastCreatedAnchor();
-            if (result)
+            if (result.Success)
             {
-                m_statusText.text = $"Saved";
-                _ = await SaveUuidToPlayerPrefs(m_lastAnchor.Uuid);
-            }
-            else
-            {
-                m_statusText.text = $"Failed to save";
+                _ = SaveUuidToPlayerPrefs(m_lastAnchor.Uuid);
             }
         }
+        #endregion
 
         #region Unsaving Anchors
         if (OVRInput.GetDown(OVRInput.Button.Two))
         {
             var result = await UnsaveLastCreatedAnchor();
-            if (result.Success)
-            {
-                m_statusText.text = $"Deleted";
-                _ = new WaitForSeconds(1.5f);
-                m_statusText.text = $"Not Saved";
-            }
-            else
-            {
-                m_statusText.text = $"Failed to delete";
-                _ = new WaitForSeconds(1.5f);
-                m_statusText.text = $"Saved";
-            }
+            if (result) RemoveLastUuidFromPlayerPrefs();
         }
 
         if (OVRInput.GetDown(OVRInput.Button.PrimaryThumbstick))
         {
-            var result = await UnsaveAllAnchors();
-            m_statusText.text = $"Deleted All";
-            _ = new WaitForSeconds(1.5f);
-            m_statusText.text = $"Not Saved";
+            _ = await UnsaveAllAnchors();
         }
 
         #endregion
@@ -72,9 +85,21 @@ public class SpatialAnchorManager : MonoBehaviour
 
     private void CreateSpatialAnchor()
     {
-        var anchor = Instantiate(AnchorPrefab, transform.position, Quaternion.identity);
-        m_uuidText = m_canvas.gameObject.transform.GetComponentInChildren<TextMeshProUGUI>();
-        m_statusText = m_canvas.gameObject.GetComponentInChildren<TextMeshProUGUI>();
+        var controllerPosition = OVRInput.GetLocalControllerPosition(OVRInput.Controller.RTouch);
+        var controllerRotation = OVRInput.GetLocalControllerRotation(OVRInput.Controller.RTouch);
+
+        var anchor = Instantiate(AnchorPrefab, controllerPosition, controllerRotation);
+
+        var textComponents = anchor.GetComponentsInChildren<TextMeshProUGUI>();
+        if (textComponents.Length > 1)
+        {
+            m_uuidText = textComponents[0];
+            m_statusText = textComponents[1];
+        }
+        else
+        {
+            Debug.LogWarning("TextMeshProUGUI components for UUID and status are missing in the prefab.");
+        }
 
         _ = StartCoroutine(AnchorCreated(anchor));
     }
@@ -84,6 +109,7 @@ public class SpatialAnchorManager : MonoBehaviour
         while (!anchor.Created && !anchor.Localized)
         {
             yield return new WaitForEndOfFrame();
+            if (Debugging) Debug.Log($"Waiting for anchor to be created: {anchor.Uuid}");
         }
 
         var uuid = anchor.Uuid;
@@ -92,82 +118,150 @@ public class SpatialAnchorManager : MonoBehaviour
 
         m_uuidText.text = $"UUID: {uuid}";
         m_statusText.text = $"Not Saved";
+
+        if (Debugging) Debug.Log($"Anchor created: {uuid}");
     }
 
-    private async Task<bool> SaveLastCreatedAnchor()
+    private async OVRTask<OVRResult<OVRAnchor.SaveResult>> SaveLastCreatedAnchor()
     {
+        var textComponents = m_lastAnchor.GetComponentsInChildren<TextMeshProUGUI>();
         var result = await m_lastAnchor.SaveAnchorAsync();
-        return result.Success;
+
+        if (result.Success)
+        {
+            if (textComponents.Length > 1)
+            {
+                var saved = SaveUuidToPlayerPrefs(m_lastAnchor.Uuid);
+                if (saved)
+                {
+                    var statusText = textComponents[1];
+                    statusText.text = $"Saved";
+                    if (Debugging) Debug.Log($"Saved anchor: {m_lastAnchor.Uuid}");
+                }
+            }
+        }
+        else if (!result.Success && Debugging)
+        {
+            Debug.Log($"Failed to save anchor: {result.Status}");
+        }
+
+        return result;
     }
 
-    private async Task<bool> SaveUuidToPlayerPrefs(Guid uuid)
+    private bool SaveUuidToPlayerPrefs(Guid uuid)
     {
-        if (m_lastAnchor != null && !PlayerPrefs.HasKey(NUMUUIDPLAYERPREF))
+        if (m_lastAnchor == null)
         {
-            await Task.Run(() =>
-            {
-                PlayerPrefs.SetInt(NUMUUIDPLAYERPREF, 0);
-                var playerNumUuids = PlayerPrefs.GetInt(NUMUUIDPLAYERPREF);
-                PlayerPrefs.SetString("uuid" + playerNumUuids, uuid.ToString());
-                PlayerPrefs.SetInt(NUMUUIDPLAYERPREF, ++playerNumUuids);
-            });
-            return true; // Task succeeded
+            Debug.LogError("SaveUuidToPlayerPrefs failed: m_lastAnchor is null.");
+            return false;
         }
-        else
+
+        try
         {
-            return false; // Task failed
+            // Ensure PlayerPrefNumUuids exists
+            var playerNumUuids = PlayerPrefs.GetInt("numUuids", 0);
+
+            // Save the UUID
+            var key = $"uuid{playerNumUuids}";
+            PlayerPrefs.SetString(key, uuid.ToString());
+            PlayerPrefs.SetInt("numUuids", playerNumUuids + 1);
+            PlayerPrefs.Save();
+
+            if (Debugging) Debug.Log($"Saved UUID: {uuid} to PlayerPrefs with key: {key}");
+            return true;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Failed to save UUID to PlayerPrefs: {e.Message}");
+            return false;
         }
     }
 
     private async OVRTask<OVRResult<OVRAnchor.EraseResult>> UnsaveLastCreatedAnchor()
     {
         var result = await m_lastAnchor.EraseAnchorAsync();
-        return result.Success
-            ? OVRResult<OVRAnchor.EraseResult>.FromSuccess(OVRAnchor.EraseResult.Success)
-            : OVRResult<OVRAnchor.EraseResult>.FromFailure(OVRAnchor.EraseResult.Failure);
+        var textComponetns = m_lastAnchor.GetComponentsInChildren<TextMeshProUGUI>();
+
+        if (result.Success)
+        {
+            var statusText = textComponetns[1];
+            statusText.text = $"Not Saved";
+            if (Debugging) Debug.Log($"Unsaved anchor: {m_lastAnchor.Uuid}");
+        }
+        else if (!result.Success && Debugging)
+        {
+            Debug.Log($"Failed to unsave anchor: {result.Status}");
+        }
+
+        return result;
     }
 
     private async OVRTask<bool> UnsaveAllAnchors()
     {
         foreach (var anchor in m_anchors)
         {
-            _ = await UnsaveAnchor(anchor);
-        }
-
-        m_anchors.Clear();
-        ClearAllUuidsFromPlayerPrefs();
-        return true;
-    }
-
-
-    private async OVRTask<bool> UnsaveAnchor(OVRSpatialAnchor anchor)
-    {
-        var result = await anchor.EraseAnchorAsync();
-        if (result.Success)
-        {
             var textComponetns = anchor.GetComponentsInChildren<TextMeshProUGUI>();
-            if (textComponetns.Length > 1)
+            var result = await anchor.EraseAnchorAsync();
+            if (result.Success)
             {
                 var statusText = textComponetns[1];
                 statusText.text = $"Not Saved";
+                if (Debugging) Debug.Log($"Unsaved anchor: {anchor.Uuid}");
             }
-            return true;
+            else if (!result.Success && Debugging)
+            {
+                Debug.Log($"Failed to unsave anchor: {result.Status}");
+            }
         }
-        // if not successful
-        return false;
+
+        m_anchors.Clear();
+        DeleteNumUuisFromPlayerPrefs();
+
+        return true;
     }
 
-    private void ClearAllUuidsFromPlayerPrefs()
+    private void DeleteNumUuisFromPlayerPrefs()
     {
-        if (PlayerPrefs.HasKey(NUMUUIDPLAYERPREF))
+        if (PlayerPrefs.HasKey("numUuids"))
         {
-            var playerNumUuids = PlayerPrefs.GetInt(NUMUUIDPLAYERPREF);
+            var playerNumUuids = PlayerPrefs.GetInt("numUuids");
             for (var i = 0; i < playerNumUuids; i++)
             {
-                PlayerPrefs.DeleteKey("uuid" + i);
+                var key = $"uuid{i}";
+                PlayerPrefs.DeleteKey(key);
+                if (Debugging) Debug.Log($"PlayerPrefs - Deleted UUID key: {key}");
             }
-            PlayerPrefs.DeleteKey(NUMUUIDPLAYERPREF);
             PlayerPrefs.Save();
+        }
+    }
+
+    private void RemoveLastUuidFromPlayerPrefs()
+    {
+        if (PlayerPrefs.HasKey("numUuids"))
+        {
+            var playerNumUuids = PlayerPrefs.GetInt("numUuids");
+
+            if (playerNumUuids > 0)
+            {
+                var lastKey = $"uuid{playerNumUuids - 1}";
+
+                if (PlayerPrefs.HasKey(lastKey))
+                {
+                    PlayerPrefs.DeleteKey(lastKey);
+                    if (Debugging) Debug.Log($"PlayerPrefs - Deleted UUID key: {lastKey}");
+                }
+
+                PlayerPrefs.SetInt("numUuids", playerNumUuids - 1);
+                PlayerPrefs.Save();
+            }
+            else
+            {
+                if (Debugging) Debug.LogWarning("PlayerPrefs - No UUIDs to remove.");
+            }
+        }
+        else
+        {
+            if (Debugging) Debug.LogWarning("PlayerPrefs - numUuids key does not exist.");
         }
     }
 }
