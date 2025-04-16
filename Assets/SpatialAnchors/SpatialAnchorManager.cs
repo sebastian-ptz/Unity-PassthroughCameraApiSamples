@@ -9,6 +9,7 @@ public class SpatialAnchorManager : MonoBehaviour
     public static SpatialAnchorManager Instance;
 
     public bool Debugging = true;
+    public bool IsSaving = false;
     public OVRSpatialAnchor AnchorPrefab;
 
     private TextMeshProUGUI m_uuidText;
@@ -124,6 +125,14 @@ public class SpatialAnchorManager : MonoBehaviour
 
     private async OVRTask<OVRResult<OVRAnchor.SaveResult>> SaveLastCreatedAnchor()
     {
+        if (IsSaving)
+        {
+            if (Debugging) Debug.Log("Save already in progress. Skipping.");
+            return OVRResult<OVRAnchor.SaveResult>.FromFailure(OVRAnchor.SaveResult.Failure);
+        }
+
+        IsSaving = true;
+
         var textComponents = m_lastAnchor.GetComponentsInChildren<TextMeshProUGUI>();
         var result = await m_lastAnchor.SaveAnchorAsync();
 
@@ -140,11 +149,12 @@ public class SpatialAnchorManager : MonoBehaviour
                 }
             }
         }
-        else if (!result.Success && Debugging)
+        else if (Debugging)
         {
             Debug.Log($"Failed to save anchor: {result.Status}");
         }
 
+        IsSaving = false;
         return result;
     }
 
