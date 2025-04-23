@@ -151,7 +151,60 @@ public class SpatialAnchorManager : MonoBehaviour
         }
         else if (Debugging)
         {
-            Debug.Log($"Failed to save anchor: {result.Status}");
+            switch (result.Status)
+            {
+                case OVRAnchor.SaveResult.Failure:
+                    Debug.LogError("Failed to save anchor: General failure.");
+                    break;
+
+                case OVRAnchor.SaveResult.FailureInvalidAnchor:
+                    Debug.LogError("Failed to save anchor: Invalid anchor.");
+                    break;
+
+                case OVRAnchor.SaveResult.FailureDataIsInvalid:
+                    Debug.LogError("Failed to save anchor: Data is invalid.");
+                    break;
+
+                case OVRAnchor.SaveResult.FailureInsufficientResources:
+                    Debug.LogError("Failed to save anchor: Insufficient resources.");
+                    break;
+
+                case OVRAnchor.SaveResult.FailureStorageAtCapacity:
+                    Debug.LogError("Failed to save anchor: Storage is at capacity.");
+                    break;
+
+                case OVRAnchor.SaveResult.FailureInsufficientView:
+                    Debug.LogError("Failed to save anchor: Insufficient view of the physical space.");
+                    break;
+
+                case OVRAnchor.SaveResult.FailurePermissionInsufficient:
+                    Debug.LogError("Failed to save anchor: Insufficient permissions.");
+                    break;
+
+                case OVRAnchor.SaveResult.FailureRateLimited:
+                    Debug.LogError("Failed to save anchor: Operation rate-limited.");
+                    break;
+
+                case OVRAnchor.SaveResult.FailureTooDark:
+                    Debug.LogError("Failed to save anchor: Environment is too dark.");
+                    break;
+
+                case OVRAnchor.SaveResult.FailureTooBright:
+                    Debug.LogError("Failed to save anchor: Environment is too bright.");
+                    break;
+
+                case OVRAnchor.SaveResult.FailureUnsupported:
+                    Debug.LogError("Failed to save anchor: Save is not supported on this platform.");
+                    break;
+
+                case OVRAnchor.SaveResult.FailurePersistenceNotEnabled:
+                    Debug.LogError("Failed to save anchor: Persistence is not enabled.");
+                    break;
+
+                default:
+                    Debug.LogError($"Failed to save anchor: Unknown error (Status: {result.Status}).");
+                    break;
+            }
         }
 
         IsSaving = false;
