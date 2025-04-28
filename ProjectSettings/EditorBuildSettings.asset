@@ -5,9 +5,12 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/SpatialAnchors/SpatialAnchors.unity
     guid: fdb3657af140d7d4a9e9097c68351179
+  - enabled: 1
+    path: Assets/SpatialAnchors/SpatialAnchor[metaBB].unity
+    guid: 86856e90f28fa904a97d46c745aeaa40
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: f2bf97b3acdb64248a707c407c9fc54e, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: a971eac5e950046e586c5e153e32d05c, type: 2}

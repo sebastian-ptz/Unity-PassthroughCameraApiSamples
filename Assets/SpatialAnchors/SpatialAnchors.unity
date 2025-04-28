@@ -8552,6 +8552,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Debugging: 1
+  IsSaving: 0
   AnchorPrefab: {fileID: 6617006388397500954, guid: 819be155438249f4bba06140c62bb433, type: 3}
 --- !u!4 &1613196016
 Transform:
