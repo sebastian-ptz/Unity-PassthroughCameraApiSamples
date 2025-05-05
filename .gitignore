@@ -1,6 +1,3 @@
-# Spatial Anchros debugging - Do not ignore specific changes:
-!/Library/PackageCache/com.meta.xr.sdk.core@*/Scripts/BuildingBlocks/SampleSpatialAnchorControllerScripts/SpatialAnchorLocalStorageManagerBuildingBlock.cs
-
 Temp/
 UserSettings/
 Library/
@@ -94,3 +91,6 @@ crashlytics-build.properties
 # Package Samples
 /Assets/Samples
 /Assets/Samples.meta
+
+# Spatial Anchros debugging - Do not ignore specific changes:
+!/Library/PackageCache/com.meta.xr.sdk.core@*/Scripts/BuildingBlocks/SampleSpatialAnchorControllerScripts/SpatialAnchorLocalStorageManagerBuildingBlock.cs
