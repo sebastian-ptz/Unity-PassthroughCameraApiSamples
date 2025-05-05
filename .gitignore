@@ -1,3 +1,6 @@
+# Spatial Anchros debugging - Do not ignore specific changes:
+!/Library/PackageCache/com.meta.xr.sdk.core@*/Scripts/BuildingBlocks/SampleSpatialAnchorControllerScripts/SpatialAnchorLocalStorageManagerBuildingBlock.cs
+
 Temp/
 UserSettings/
 Library/
