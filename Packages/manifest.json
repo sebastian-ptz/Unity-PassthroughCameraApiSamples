@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.meta.xr.mrutilitykit": "74.0.1",
+    "com.meta.xr.mrutilitykit": "74.0.2",
     "com.unity.feature.development": "1.0.2",
     "com.unity.mobile.android-logcat": "1.4.5",
     "com.unity.sentis": "2.1.1",
